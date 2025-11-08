@@ -1,15 +1,15 @@
-# Two-Face
+# dr-manhattan
 
 CCXT-style unified API for prediction markets. Simple, scalable, and easy to extend.
 
 ## Architecture
 
-Two-Face provides a unified interface to interact with multiple prediction market platforms, similar to how CCXT works for cryptocurrency exchanges.
+`dr-manhattan` provides a unified interface to interact with multiple prediction market platforms, similar to how CCXT works for cryptocurrency exchanges.
 
 ### Core Components
 
 ```
-two_face/
+dr_manhattan/
 ├── base/           # Core abstractions
 │   ├── exchange.py # Abstract base class
 │   └── errors.py   # Exception hierarchy
@@ -21,10 +21,6 @@ two_face/
 │   ├── order.py
 │   └── position.py
 └── utils/          # Utilities (future)
-
-Symbolic Links:
-├── poly-mm/        -> /path/to/poly-mm
-└── limitless-mm/   -> /path/to/limitless-mm
 ```
 
 ### Design Principles
@@ -54,11 +50,11 @@ uv pip install -e .
 ### Basic Usage (Public API)
 
 ```python
-import two_face
+import dr_manhattan
 
 # Initialize exchange without authentication
-polymarket = two_face.Polymarket({'timeout': 30})
-limitless = two_face.Limitless({'timeout': 30})
+polymarket = dr_manhattan.Polymarket({'timeout': 30})
+limitless = dr_manhattan.Limitless({'timeout': 30})
 
 # Fetch markets
 markets = polymarket.fetch_markets()
@@ -71,10 +67,10 @@ for market in markets:
 The implementations use symbolic links to integrate with existing market maker implementations:
 
 ```python
-import two_face
+import dr_manhattan
 
 # Polymarket with poly-mm integration
-polymarket = two_face.Polymarket({
+polymarket = dr_manhattan.Polymarket({
     'private_key': 'your_private_key',
     'condition_id': 'condition_id',
     'yes_token_id': 'yes_token',
@@ -83,7 +79,7 @@ polymarket = two_face.Polymarket({
 })
 
 # Limitless with limitless-mm integration
-limitless = two_face.Limitless({
+limitless = dr_manhattan.Limitless({
     'private_key': 'your_private_key',
     'timeout': 30
 })
@@ -92,7 +88,7 @@ limitless = two_face.Limitless({
 order = polymarket.create_order(
     market_id="market_123",
     outcome="Yes",
-    side=two_face.OrderSide.BUY,
+    side=dr_manhattan.OrderSide.BUY,
     price=0.65,
     size=100,
     params={'token_id': 'token_id'}
@@ -106,11 +102,11 @@ print(f"USDC: {balance['USDC']}")
 ### Unified API Pattern
 
 ```python
-import two_face
+import dr_manhattan
 
 # Works with any exchange
-for exchange_id in two_face.exchanges:
-    exchange = two_face.exchanges[exchange_id]()
+for exchange_id in dr_manhattan.exchanges:
+    exchange = dr_manhattan.exchanges[exchange_id]()
     print(f"{exchange.name}: {exchange.id}")
 ```
 
@@ -119,7 +115,7 @@ for exchange_id in two_face.exchanges:
 To add a new exchange, create a class that inherits from `Exchange`:
 
 ```python
-from two_face.base import Exchange
+from dr_manhattan.base import Exchange
 
 class NewExchange(Exchange):
     @property
@@ -137,7 +133,7 @@ class NewExchange(Exchange):
     # Implement other abstract methods...
 ```
 
-Register in `two_face/__init__.py`:
+Register in `dr_manhattan/__init__.py`:
 
 ```python
 from .exchanges.newexchange import NewExchange
@@ -177,26 +173,28 @@ When initialized with authentication credentials, the exchange classes use these
 
 ## Error Handling
 
-All errors inherit from `TwoFaceError`:
+All errors inherit from `DrManhattanError`:
 - `ExchangeError` - Exchange-specific errors
 - `NetworkError` - Connectivity issues
 - `AuthenticationError` - Auth failures
 - `InvalidOrder` - Invalid order parameters
 - `MarketNotFound` - Market doesn't exist
 
-## Example
+## Examples
 
-Run the included example:
+Check out the [examples/](examples/) directory for working examples:
+
+- **spread_strategy.py** - Arbitrage trading strategy for binary markets
+- **simple_test.py** - Basic market data fetching
+- **test_strategy.py** - Strategy testing framework
+
+Run an example:
 
 ```bash
-uv run python example.py
+uv run python examples/spread_strategy.py
 ```
 
-The example demonstrates:
-- Connecting to both Polymarket and Limitless
-- Fetching market data
-- Unified API pattern
-- Exchange capabilities
+See [examples/README.md](examples/README.md) for detailed documentation.
 
 ## Dependencies
 
