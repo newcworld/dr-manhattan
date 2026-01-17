@@ -29,6 +29,7 @@ from .exchanges.kalshi import Kalshi
 from .exchanges.limitless import Limitless
 from .exchanges.opinion import Opinion
 from .exchanges.polymarket import Polymarket
+from .exchanges.predictfun import PredictFun
 from .models.market import ExchangeOutcomeRef, Market, OutcomeRef, ReadableMarketId
 from .models.order import Order, OrderSide, OrderStatus
 from .models.position import Position
@@ -60,6 +61,7 @@ __all__ = [
     "Polymarket",
     "Limitless",
     "Opinion",
+    "PredictFun",
     "Kalshi",
     "StrategyState",
     "DeltaInfo",
@@ -82,11 +84,13 @@ __all__ = [
 POLYMARKET = "polymarket"
 OPINION = "opinion"
 LIMITLESS = "limitless"
+PREDICT_FUN = "predict.fun"
 KALSHI = "kalshi"
 
 exchanges = {
     POLYMARKET: Polymarket,
     LIMITLESS: Limitless,
     OPINION: Opinion,
+    PREDICT_FUN: PredictFun,
     KALSHI: Kalshi,
 }
