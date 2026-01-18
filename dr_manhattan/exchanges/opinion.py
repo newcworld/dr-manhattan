@@ -20,7 +20,7 @@ from ..base.errors import (
 )
 from ..base.exchange import Exchange
 from ..models.market import Market
-from ..models.order import Order, OrderSide, OrderStatus
+from ..models.order import Order, OrderSide, OrderStatus, OrderTimeInForce
 from ..models.position import Position
 
 
@@ -566,6 +566,7 @@ class Opinion(Exchange):
         price: float,
         size: float,
         params: Optional[Dict[str, Any]] = None,
+        time_in_force: OrderTimeInForce = OrderTimeInForce.GTC,
     ) -> Order:
         """
         Create a new order on Opinion.
@@ -580,11 +581,20 @@ class Opinion(Exchange):
                 - token_id: Token ID (required)
                 - order_type: "limit" or "market" (default: "limit")
                 - check_approval: Whether to check approvals (default: False)
+            time_in_force: Order time in force. Opinion only supports GTC.
+                FOK and IOC are not supported and will raise InvalidOrder.
 
         Returns:
             Order object
         """
         self._ensure_client()
+
+        # Validate time_in_force - Opinion only supports GTC
+        if time_in_force != OrderTimeInForce.GTC:
+            raise InvalidOrder(
+                f"Opinion does not support {time_in_force.value.upper()} orders. "
+                "Only GTC orders are supported."
+            )
 
         extra_params = params or {}
         token_id = extra_params.get("token_id")
@@ -643,6 +653,7 @@ class Opinion(Exchange):
                 status=status,
                 created_at=datetime.now(timezone.utc),
                 updated_at=datetime.now(timezone.utc),
+                time_in_force=time_in_force,
             )
 
         except InvalidOrder:
